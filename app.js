@@ -20,6 +20,14 @@ let pos = {};
 let position = Object.assign({}, pos);
 let uuid = [];
 
+// Variable to track the pause state
+let isPaused = false;
+
+pauseButton.onclick = function() {
+    isPaused = !isPaused;
+    pauseButton.textContent = isPaused ? "Continue" : "Pause";
+}
+
 // Set initial speed and update on slider input
 speed = (100 - slider.value) * 10;
 tempSpeed = speed;
@@ -102,14 +110,17 @@ const clearColor = async (board) => {
         for (let k = 0; k < n; ++k) {
             (j + k) & 1
                 ?
-                (row.getElementsByTagName("td")[k].style.backgroundColor = "#FF9F1C") :
-                (row.getElementsByTagName("td")[k].style.backgroundColor = "#FCCD90");
+                (row.getElementsByTagName("td")[k].style.backgroundColor = "#8ca464") :
+                (row.getElementsByTagName("td")[k].style.backgroundColor = "#b4bcaa");
         }
     }
 }
 
 // Function to create a delay for visualization
 const delay = async () => {
+    while (isPaused) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    }
     await new Promise((done) => setTimeout(() => done(), speed));
 }
 
@@ -150,8 +161,6 @@ const solveQueen = async (board, r, n) => {
         }
     }
 }
-
-
 
 // Function to handle the visualization process
 playButton.onclick = async function visualise() {
@@ -208,8 +217,8 @@ playButton.onclick = async function visualise() {
                 const col = row.insertCell(j);
                 (i + j) & 1
                     ?
-                    (col.style.backgroundColor = "#FF9F1C") :
-                    (col.style.backgroundColor = "#FCCD90");
+                    (col.style.backgroundColor = "#8ca464") :
+                    (col.style.backgroundColor = "#b4bcaa");
                 col.innerHTML = "-";
                 col.style.border = "0.3px solid #373f51";
             }
@@ -219,7 +228,7 @@ playButton.onclick = async function visualise() {
     await nQueen();
 };
 
-const getNumberOfBoards = async(n) => {
+const getNumberOfBoards = async (n) => {
     let count = 0;
     let cols = new Set();
     let diag1 = new Set();
@@ -241,7 +250,6 @@ const getNumberOfBoards = async(n) => {
             diag1.add(row - col);
             diag2.add(row + col);
 
-
             await backtrack(row + 1);
 
             cols.delete(col);
@@ -254,5 +262,3 @@ const getNumberOfBoards = async(n) => {
     console.log(count);
     return count;
 }
-
-// console.log(getNumberOfBoards(4));
